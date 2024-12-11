@@ -129,12 +129,13 @@
                         carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
                         carpet.rotation.setFromRotationMatrix(pose.transform.orientation);
                         console.log("Placing carpet at:", carpet.position); // Debug log to confirm position
+                    } else {
+                        console.log("Pose is null or invalid.");
                     }
-                    
                 }
+            } else {
+                console.log("No hit test results found.");
             }
-            else {
-                console.log("No hit test results found.");}
 
             renderer.render(scene, camera);
             xrSession.requestAnimationFrame(onXRFrame);
