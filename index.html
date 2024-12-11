@@ -24,26 +24,18 @@
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-            // Create a WebGLRenderer with XR compatibility
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Make WebGL context XR-compatible
-            const glContext = renderer.getContext();
-            glContext.getExtension('WEBGL_multiview'); // Optional: ensure multiview is available
-            glContext.getExtension('OES_texture_float'); // Optional: enable support for floating point textures
-            glContext.getExtension('OES_standard_derivatives'); // Optional: support for shaders
-
-            // Set up basic light
-            const light = new THREE.AmbientLight(0x404040, 5);
+            // Set up a basic light
+            const light = new THREE.AmbientLight(0x404040, 5); // Ambient light
             scene.add(light);
 
             // Load the carpet model using GLTFLoader
             const loader = new THREE.GLTFLoader();
             loader.load(
-                './Assets/carpet.glb',
+                './Assets/carpet.glb',  // Path to your GLB model
                 function(gltf) {
                     carpet = gltf.scene;
                     carpet.scale.set(1, 1, 1); // Adjust the scale if necessary
@@ -62,6 +54,7 @@
         async function startXR() {
             if (navigator.xr) {
                 try {
+                    // Request an immersive AR session
                     const session = await navigator.xr.requestSession('immersive-ar', {
                         requiredFeatures: ['hit-test']
                     });
@@ -80,10 +73,16 @@
                     // Update session state with the XR-compatible WebGL context
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
+                    // Create and request a reference space
                     const referenceSpace = await xrSession.requestReferenceSpace('local');
                     xrSession.requestHitTestSource({ space: referenceSpace });
 
                     xrSession.requestAnimationFrame(onXRFrame);
+
+                    // Set size for the renderer now that XR session is active
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
                 } catch (err) {
                     console.error("WebXR session failed:", err);
                 }
@@ -96,6 +95,7 @@
             const referenceSpace = session.requestReferenceSpace('local');
             const hitTestSource = session.requestHitTestSource({ space: referenceSpace });
 
+            // Update the carpet's position based on hit test results
             if (hitTestSource) {
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
                 if (hitTestResults.length > 0) {
@@ -109,20 +109,24 @@
             xrSession.requestAnimationFrame(onXRFrame);
         }
 
+        // On XR session end
         function onSessionEnded() {
             console.log('XR session ended');
         }
 
         // Resize listener
         window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+            if (xrSession) {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            }
         });
 
+        // Event listener to start AR session when button is clicked
         document.getElementById('startAR').addEventListener('click', () => {
-            init();
-            startXR();
+            init();  // Initialize the scene
+            startXR();  // Start the AR session
         });
     </script>
 </body>
