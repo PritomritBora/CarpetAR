@@ -28,10 +28,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Ensure WebGL context is XR compatible
-            const gl = renderer.getContext(); // Get the WebGL context from the Three.js renderer
-            await gl.makeXRCompatible(); // Make the context XR compatible
-
             // Set up a basic light
             const light = new THREE.AmbientLight(0x404040, 5); // Ambient light
             scene.add(light);
