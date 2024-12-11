@@ -10,17 +10,15 @@
     </style>
 </head>
 <body>
+    <!-- Button to start AR session -->
     <button id="startAR">Start AR</button>
-    <script type="module">
-        import * as THREE from 'https://cdn.skypack.dev/three@0.128.0';
-        import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
 
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <script>
         let scene, camera, renderer, carpet;
         let xrSession, hitTestSource = null;
-
-        const startARButton = document.getElementById("startAR");
-
-        startARButton.addEventListener('click', startXR);
 
         // Initialize Three.js scene
         function init() {
@@ -34,43 +32,44 @@
             const light = new THREE.AmbientLight(0x404040, 5); // Ambient light
             scene.add(light);
 
-            // Start the WebXR session
-            initAR();
+            // Load the carpet model using GLTFLoader
+            const loader = new THREE.GLTFLoader();
+            loader.load(
+                './Assets/carpet.glb',  // Path to your GLB model
+                function(gltf) {
+                    carpet = gltf.scene;
+                    carpet.scale.set(1, 1, 1); // Adjust the scale if necessary
+                    carpet.rotation.x = -Math.PI / 2; // Lay the carpet flat on the ground
+                    scene.add(carpet);
+                    console.log('Carpet loaded');
+                },
+                undefined,
+                function(error) {
+                    console.error('Error loading carpet model:', error);
+                }
+            );
         }
 
         // Start the XR session
         async function startXR() {
             if (navigator.xr) {
-                const session = await navigator.xr.requestSession('immersive-ar', {
-                    requiredFeatures: ['hit-test']
-                });
+                try {
+                    const session = await navigator.xr.requestSession('immersive-ar', {
+                        requiredFeatures: ['hit-test']
+                    });
+                    console.log("XR session started");
+                    xrSession = session;
+                    xrSession.addEventListener('end', onSessionEnded);
 
-                xrSession = session;
-                xrSession.addEventListener('end', onSessionEnded);
+                    const referenceSpace = await xrSession.requestReferenceSpace('local');
+                    xrSession.requestHitTestSource({ space: referenceSpace });
 
-                const referenceSpace = await xrSession.requestReferenceSpace('local');
-                xrSession.requestHitTestSource({ space: referenceSpace });
-
-                xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, renderer.getContext()) });
-                xrSession.requestAnimationFrame(onXRFrame);
-
-                startARButton.style.display = 'none';  // Hide button after starting AR
-            } else {
-                alert('WebXR not supported on this device');
+                    xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, renderer.getContext()) });
+                    xrSession.requestAnimationFrame(onXRFrame);
+                } catch (err) {
+                    console.error("WebXR session failed:", err);
+                }
             }
-        }
-
-        // Load the carpet model
-        function loadCarpetModel() {
-            const loader = new GLTFLoader();
-            loader.load('./Assets/carpet.glb', function (gltf) {
-                carpet = gltf.scene;
-                carpet.scale.set(0.5, 0.5, 0.5); // Scale to fit
-                carpet.rotation.x = -Math.PI / 2; // Lay the carpet flat on the ground
-                scene.add(carpet);
-            }, undefined, function (error) {
-                console.error(error);
-            });
         }
 
         // Handle the XR frame rendering
@@ -93,12 +92,6 @@
             xrSession.requestAnimationFrame(onXRFrame);
         }
 
-        // Initialize AR setup
-        async function initAR() {
-            init();
-            loadCarpetModel();
-        }
-
         // On XR session end
         function onSessionEnded() {
             console.log('XR session ended');
@@ -111,6 +104,11 @@
             camera.updateProjectionMatrix();
         });
 
+        // Event listener to start AR session when button is clicked
+        document.getElementById('startAR').addEventListener('click', () => {
+            init();  // Initialize the scene
+            startXR();  // Start the AR session
+        });
     </script>
 </body>
 </html>
