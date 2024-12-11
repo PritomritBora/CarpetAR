@@ -88,6 +88,7 @@
                     // Create and request a reference space
                     referenceSpace = await xrSession.requestReferenceSpace('local');
                     hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
+                    console.log("Hit Test Source: ", hitTestSource);
 
                     xrSession.requestAnimationFrame(onXRFrame);
                 } catch (err) {
@@ -129,6 +130,8 @@
                     }
                 }
             }
+            else {
+                console.log("No hit test results found.");}
 
             renderer.render(scene, camera);
             xrSession.requestAnimationFrame(onXRFrame);
