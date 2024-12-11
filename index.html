@@ -21,12 +21,16 @@
         let xrSession, hitTestSource = null;
 
         // Initialize Three.js scene
-        function init() {
+        async function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
+
+            // Ensure WebGL context is XR compatible
+            const gl = renderer.getContext(); // Get the WebGL context from the Three.js renderer
+            await gl.makeXRCompatible(); // Make the context XR compatible
 
             // Set up a basic light
             const light = new THREE.AmbientLight(0x404040, 5); // Ambient light
@@ -78,11 +82,6 @@
                     xrSession.requestHitTestSource({ space: referenceSpace });
 
                     xrSession.requestAnimationFrame(onXRFrame);
-
-                    // Set size for the renderer now that XR session is active
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
                 } catch (err) {
                     console.error("WebXR session failed:", err);
                 }
@@ -116,11 +115,9 @@
 
         // Resize listener
         window.addEventListener('resize', () => {
-            if (xrSession) {
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-            }
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
         });
 
         // Event listener to start AR session when button is clicked
