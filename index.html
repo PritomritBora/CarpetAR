@@ -121,14 +121,16 @@
             // Continue with hit testing and carpet placement
             if (hitTestSource) {
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
-                console.log("hit test results found.");
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
                     const pose = hit.getPose(referenceSpace);
                     if (pose) {
+                        console.log("pose found.");
                         carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
                         carpet.rotation.setFromRotationMatrix(pose.transform.orientation);
+                        console.log("Placing carpet at:", carpet.position); // Debug log to confirm position
                     }
+                    
                 }
             }
             else {
