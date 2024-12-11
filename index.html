@@ -19,20 +19,16 @@
     <script>
         let scene, camera, renderer, carpet;
         let xrSession, hitTestSource = null;
-        let referenceSpace = null;
 
         // Initialize Three.js scene
         async function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-
-            // Ensure WebGL context is XR-compatible
-            const gl = renderer.getContext();
-            if (gl && gl.makeXRCompatible) {
-                await gl.makeXRCompatible();
+            if (!renderer) {
+                console.error("Renderer initialization failed!");
+                return;
             }
-
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
@@ -86,12 +82,11 @@
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
                     // Create and request a reference space
-                    referenceSpace = await xrSession.requestReferenceSpace('local');
-                    
-                    // Request the hit test source tied to the reference space
+                    const referenceSpace = await xrSession.requestReferenceSpace('local');
+
+                    // Create the hitTestSource
                     hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
 
-                    // Start rendering frames
                     xrSession.requestAnimationFrame(onXRFrame);
                 } catch (err) {
                     console.error("WebXR session failed:", err);
@@ -103,12 +98,13 @@
         function onXRFrame(t, frame) {
             const session = frame.session;
 
-            // Ensure that hitTestSource is initialized before attempting to get results
             if (hitTestSource) {
+                // Get the hit test results from the XRFrame
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
+
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
-                    const pose = hit.getPose(referenceSpace);
+                    const pose = hit.getPose(session.requestReferenceSpace('local'));
                     carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
                 }
             }
