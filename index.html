@@ -19,6 +19,7 @@
     <script>
         let scene, camera, renderer, carpet;
         let xrSession, hitTestSource = null;
+        let referenceSpace = null;
 
         // Initialize Three.js scene
         async function init() {
@@ -85,9 +86,12 @@
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
                     // Create and request a reference space
-                    const referenceSpace = await xrSession.requestReferenceSpace('local');
-                    xrSession.requestHitTestSource({ space: referenceSpace });
+                    referenceSpace = await xrSession.requestReferenceSpace('local');
+                    
+                    // Request the hit test source tied to the reference space
+                    hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
 
+                    // Start rendering frames
                     xrSession.requestAnimationFrame(onXRFrame);
                 } catch (err) {
                     console.error("WebXR session failed:", err);
@@ -98,10 +102,8 @@
         // Handle the XR frame rendering
         function onXRFrame(t, frame) {
             const session = frame.session;
-            const referenceSpace = session.requestReferenceSpace('local');
-            const hitTestSource = session.requestHitTestSource({ space: referenceSpace });
 
-            // Update the carpet's position based on hit test results
+            // Ensure that hitTestSource is initialized before attempting to get results
             if (hitTestSource) {
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
                 if (hitTestResults.length > 0) {
