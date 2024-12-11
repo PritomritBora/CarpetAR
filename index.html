@@ -19,17 +19,19 @@
     <script>
         let scene, camera, renderer, carpet;
         let xrSession, hitTestSource = null;
-        let referenceSpace;
 
         // Initialize Three.js scene
         async function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            if (!renderer) {
-                console.error("Renderer initialization failed!");
-                return;
+
+            // Ensure WebGL context is XR-compatible
+            const gl = renderer.getContext();
+            if (gl && gl.makeXRCompatible) {
+                await gl.makeXRCompatible();
             }
+
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
@@ -82,11 +84,9 @@
                     // Update session state with the XR-compatible WebGL context
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
-                    // Request a reference space
-                    referenceSpace = await xrSession.requestReferenceSpace('local');
-                    
-                    // Create the hitTestSource
-                    hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
+                    // Create and request a reference space
+                    const referenceSpace = await xrSession.requestReferenceSpace('local');
+                    xrSession.requestHitTestSource({ space: referenceSpace });
 
                     xrSession.requestAnimationFrame(onXRFrame);
                 } catch (err) {
@@ -98,11 +98,12 @@
         // Handle the XR frame rendering
         function onXRFrame(t, frame) {
             const session = frame.session;
+            const referenceSpace = session.requestReferenceSpace('local');
+            const hitTestSource = session.requestHitTestSource({ space: referenceSpace });
 
+            // Update the carpet's position based on hit test results
             if (hitTestSource) {
-                // Get the hit test results from the XRFrame
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
-
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
                     const pose = hit.getPose(referenceSpace);
