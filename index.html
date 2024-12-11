@@ -18,7 +18,8 @@
 
     <script>
         let scene, camera, renderer, carpet;
-        let xrSession, hitTestSource = null, referenceSpace;
+        let xrSession, hitTestSource = null;
+        let referenceSpace;
 
         // Initialize Three.js scene
         async function init() {
@@ -99,29 +100,34 @@
         function onXRFrame(t, frame) {
             const session = frame.session;
 
-            // Ensure hitTestSource is valid before proceeding
+            if (!referenceSpace) {
+                console.error("Reference space is not available");
+                return;
+            }
+
+            const viewerPose = frame.getViewerPose(referenceSpace);
+
+            if (viewerPose) {
+                const cameraPose = viewerPose.pose;
+                if (cameraPose) {
+                    camera.position.set(cameraPose.position.x, cameraPose.position.y, cameraPose.position.z);
+                    camera.rotation.set(cameraPose.orientation.x, cameraPose.orientation.y, cameraPose.orientation.z, cameraPose.orientation.w);
+                }
+            } else {
+                console.log("No viewer pose available for this frame.");
+            }
+
+            // Continue with hit testing and carpet placement
             if (hitTestSource) {
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
-
-                // Only place carpet if we have valid hit test results
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
                     const pose = hit.getPose(referenceSpace);
-
                     if (pose) {
-                        // Update the carpet's position based on the pose
                         carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
-                        carpet.rotation.setFromRotationMatrix(pose.transform.orientation); // Optional: for rotation
+                        carpet.rotation.setFromRotationMatrix(pose.transform.orientation);
                     }
                 }
-            }
-
-            // Update the camera position and orientation from the viewer pose
-            const viewerPose = frame.getViewerPose(referenceSpace);
-            if (viewerPose) {
-                const cameraPose = viewerPose.pose;
-                camera.position.set(cameraPose.position.x, cameraPose.position.y, cameraPose.position.z);
-                camera.rotation.set(cameraPose.orientation.x, cameraPose.orientation.y, cameraPose.orientation.z, cameraPose.orientation.w);
             }
 
             renderer.render(scene, camera);
