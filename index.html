@@ -107,6 +107,7 @@
             }
 
             const viewerPose = frame.getViewerPose(referenceSpace);
+            console.log("getting viewer pose");
 
             if (viewerPose) {
                 const cameraPose = viewerPose.pose;
@@ -121,9 +122,15 @@
             // Continue with hit testing and carpet placement
             if (hitTestSource) {
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
+                console.log("getting hitTestResults")
+                
                 if (hitTestResults.length > 0) {
+                    console.log("hitTestResults available");
+
                     const hit = hitTestResults[0];
                     const pose = hit.getPose(referenceSpace);
+                    console.log(pose);
+
                     if (pose) {
                         console.log("pose found.");
                         carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
