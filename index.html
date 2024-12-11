@@ -112,4 +112,28 @@
             }
 
             renderer.render(scene, camera);
-            xrSessio
+            xrSession.requestAnimationFrame(onXRFrame);
+        }
+
+        // On XR session end
+        function onSessionEnded() {
+            console.log('XR session ended');
+        }
+
+        // Resize listener
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            }
+        });
+
+        // Event listener to start AR session when button is clicked
+        document.getElementById('startAR').addEventListener('click', () => {
+            init();  // Initialize the scene
+            startXR();  // Start the AR session
+        });
+    </script>
+</body>
+</html>
