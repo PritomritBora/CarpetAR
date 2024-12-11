@@ -25,6 +25,10 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            if (!renderer) {
+                console.error("Renderer initialization failed!");
+                return;
+            }
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
@@ -48,6 +52,10 @@
                     console.error('Error loading carpet model:', error);
                 }
             );
+
+            // Set the camera's aspect ratio and update the projection matrix
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
         }
 
         // Start the XR session
@@ -111,9 +119,11 @@
 
         // Resize listener
         window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+            if (camera && renderer) {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            }
         });
 
         // Event listener to start AR session when button is clicked
