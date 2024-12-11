@@ -54,6 +54,7 @@
         async function startXR() {
             if (navigator.xr) {
                 try {
+                    // Request an immersive AR session
                     const session = await navigator.xr.requestSession('immersive-ar', {
                         requiredFeatures: ['hit-test']
                     });
@@ -61,8 +62,15 @@
                     xrSession = session;
                     xrSession.addEventListener('end', onSessionEnded);
 
-                    // Set up WebGL context for XR
-                    const glLayer = new XRWebGLLayer(xrSession, renderer.getContext());
+                    // Create a WebGL layer that is XR compatible
+                    const glLayer = new XRWebGLLayer(xrSession, renderer.getContext(), {
+                        antialias: true,
+                        alpha: true,
+                        depth: true,
+                        stencil: true
+                    });
+
+                    // Update session state with the XR-compatible WebGL context
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
                     // Create and request a reference space
