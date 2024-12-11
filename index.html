@@ -121,6 +121,7 @@
             // Continue with hit testing and carpet placement
             if (hitTestSource) {
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
+                console.log("hit test results found.");
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
                     const pose = hit.getPose(referenceSpace);
