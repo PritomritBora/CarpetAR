@@ -18,7 +18,7 @@
 
     <script>
         let scene, camera, renderer, carpet;
-        let xrSession, hitTestSource = null;
+        let xrSession, hitTestSource = null, referenceSpace;
 
         // Initialize Three.js scene
         async function init() {
@@ -85,7 +85,7 @@
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
                     // Create and request a reference space
-                    const referenceSpace = await xrSession.requestReferenceSpace('local');
+                    referenceSpace = await xrSession.requestReferenceSpace('local');
                     hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
 
                     xrSession.requestAnimationFrame(onXRFrame);
@@ -98,7 +98,6 @@
         // Handle the XR frame rendering
         function onXRFrame(t, frame) {
             const session = frame.session;
-            const referenceSpace = session.requestReferenceSpace('local');
 
             // Ensure hitTestSource is valid before proceeding
             if (hitTestSource) {
@@ -115,6 +114,14 @@
                         carpet.rotation.setFromRotationMatrix(pose.transform.orientation); // Optional: for rotation
                     }
                 }
+            }
+
+            // Update the camera position and orientation from the viewer pose
+            const viewerPose = frame.getViewerPose(referenceSpace);
+            if (viewerPose) {
+                const cameraPose = viewerPose.pose;
+                camera.position.set(cameraPose.position.x, cameraPose.position.y, cameraPose.position.z);
+                camera.rotation.set(cameraPose.orientation.x, cameraPose.orientation.y, cameraPose.orientation.z, cameraPose.orientation.w);
             }
 
             renderer.render(scene, camera);
