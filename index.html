@@ -19,6 +19,7 @@
     <script>
         let scene, camera, renderer, carpet;
         let xrSession, hitTestSource = null;
+        let referenceSpace;
 
         // Initialize Three.js scene
         async function init() {
@@ -81,9 +82,9 @@
                     // Update session state with the XR-compatible WebGL context
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
-                    // Create and request a reference space
-                    const referenceSpace = await xrSession.requestReferenceSpace('local');
-
+                    // Request a reference space
+                    referenceSpace = await xrSession.requestReferenceSpace('local');
+                    
                     // Create the hitTestSource
                     hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
 
@@ -104,7 +105,7 @@
 
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
-                    const pose = hit.getPose(session.requestReferenceSpace('local'));
+                    const pose = hit.getPose(referenceSpace);
                     carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
                 }
             }
