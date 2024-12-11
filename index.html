@@ -24,7 +24,7 @@
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
@@ -61,10 +61,14 @@
                     xrSession = session;
                     xrSession.addEventListener('end', onSessionEnded);
 
+                    // Set up WebGL context for XR
+                    const glLayer = new XRWebGLLayer(xrSession, renderer.getContext());
+                    xrSession.updateRenderState({ baseLayer: glLayer });
+
+                    // Create and request a reference space
                     const referenceSpace = await xrSession.requestReferenceSpace('local');
                     xrSession.requestHitTestSource({ space: referenceSpace });
 
-                    xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, renderer.getContext()) });
                     xrSession.requestAnimationFrame(onXRFrame);
                 } catch (err) {
                     console.error("WebXR session failed:", err);
