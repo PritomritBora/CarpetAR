@@ -68,7 +68,7 @@
                 try {
                     // Request an immersive AR session
                     const session = await navigator.xr.requestSession('immersive-ar', {
-                        requiredFeatures: ['hit-test']
+                        requiredFeatures: ['hit-test', 'viewer']
                     });
                     console.log("XR session started");
                     xrSession = session;
@@ -132,14 +132,19 @@
                     const pose = hit.getPose(referenceSpace);
                     console.log(pose);
 
-                    if (pose) {
-                        console.log("pose found.");
-                        carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
-                        carpet.rotation.setFromRotationMatrix(pose.transform.orientation);
-                        console.log("Placing carpet at:", carpet.position); // Debug log to confirm position
+                    if (pose && pose.transform) {
+                        const transform = pose.transform;
+                        if (transform.orientation) {
+                             carpet.rotation.setFromRotationMatrix(transform.orientation);
+                        } else if (transform.rotation) {
+                                carpet.rotation.set(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+                        } else {
+                            console.error("No valid rotation or orientation data found:", transform);
+                        }
                     } else {
-                        console.log("Pose is null or invalid.");
-                    }
+                         console.error("Pose or pose transform is null or invalid:", pose);
+                        }
+
                 }
             } else {
                 console.log("No hit test results found.");
