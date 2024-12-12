@@ -6,7 +6,7 @@
     <title>Choose Your Carpet in AR</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -14,50 +14,70 @@
             height: 100vh;
             margin: 0;
             background: #f5f5f5;
+            color: #333;
         }
 
         h1 {
             margin-bottom: 20px;
-            color: #333;
+            font-size: 2rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .intro-text {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 600px;
+            padding: 0 20px;
         }
 
         .carpet-selection {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 30px;
             margin-top: 20px;
+            margin-bottom: 40px;
         }
 
         .carpet-option {
             text-align: center;
             width: 100%;
-            max-width: 200px;
+            max-width: 250px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .carpet-option:hover {
+            transform: scale(1.05);
         }
 
         .carpet-option img {
             width: 100%;
             height: auto;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .ar-button {
             display: block;
             background-color: #0078ff;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 25px;
-            font-size: 1rem;
-            margin-top: 10px;
+            font-size: 1.1rem;
+            margin-top: 15px;
             text-decoration: none;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
             width: 100%;
             text-align: center;
         }
 
         .ar-button:hover {
             background-color: #005fcc;
+            transform: translateY(-3px);
         }
 
         /* Media Query for small screens (phones) */
@@ -73,11 +93,16 @@
             }
 
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
             }
 
             .ar-button {
-                padding: 12px 20px;
+                padding: 14px 25px;
+            }
+
+            .intro-text {
+                font-size: 1rem;
+                padding: 0 10px;
             }
         }
 
@@ -89,32 +114,44 @@
             }
 
             .ar-button {
-                font-size: 0.9rem;
-                padding: 10px 15px;
+                font-size: 1rem;
+                padding: 12px 20px;
             }
 
             h1 {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
+            }
+
+            .intro-text {
+                font-size: 0.9rem;
+                padding: 0 10px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Choose Your Carpet</h1>
-    
+    <h1>Choose Your Carpet in Augmented Reality</h1>
+    <p class="intro-text">
+        Explore our selection of beautiful carpets and view them in your own space through Augmented Reality (AR). Simply choose a carpet and see how it looks in your room before making a decision. It's easy and fun!
+    </p>
+
     <div class="carpet-selection">
         <div class="carpet-option">
             <img src="https://neon-trifle-2db3a4.netlify.app/Assets/alba.jpg" alt="Carpet 1">
-            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alba.usdz" rel="ar" class="ar-button">Carpet 1</a>
+            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alba.usdz" rel="ar" class="ar-button">View Carpet 1 in AR</a>
         </div>
         <div class="carpet-option">
             <img src="https://neon-trifle-2db3a4.netlify.app/Assets/amber.jpg" alt="Carpet 2">
-            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/amber.usdz" rel="ar" class="ar-button">Carpet 2</a>
+            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/amber.usdz" rel="ar" class="ar-button">View Carpet 2 in AR</a>
         </div>
         <div class="carpet-option">
             <img src="https://neon-trifle-2db3a4.netlify.app/Assets/alegria.jpg" alt="Carpet 3">
-            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alegria.usdz" rel="ar" class="ar-button">Carpet 3</a>
+            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alegria.usdz" rel="ar" class="ar-button">View Carpet 3 in AR</a>
         </div>
     </div>
+
+    <p class="intro-text">
+        Try out different carpets to find the one that fits your style and space best. Enjoy the convenience of AR technology!
+    </p>
 </body>
 </html>
