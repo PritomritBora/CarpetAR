@@ -10,9 +10,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
+            min-height: 100vh;
             margin: 0;
+            padding-top: 20px;
             background: #f5f5f5;
             color: #333;
         }
@@ -22,6 +23,7 @@
             font-size: 2rem;
             color: #2c3e50;
             font-weight: bold;
+            text-align: center;
         }
 
         .intro-text {
@@ -46,6 +48,10 @@
             text-align: center;
             width: 100%;
             max-width: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             transition: transform 0.3s ease-in-out;
         }
 
@@ -59,6 +65,13 @@
             object-fit: cover;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .carpet-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #333;
         }
 
         .ar-button {
@@ -138,15 +151,18 @@
     <div class="carpet-selection">
         <div class="carpet-option">
             <img src="https://neon-trifle-2db3a4.netlify.app/Assets/alba.jpg" alt="Carpet 1">
-            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alba.usdz" rel="ar" class="ar-button">View Carpet 1 in AR</a>
+            <p class="carpet-name">Alba</p>
+            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alba.usdz" rel="ar" class="ar-button">View Alba in AR</a>
         </div>
         <div class="carpet-option">
             <img src="https://neon-trifle-2db3a4.netlify.app/Assets/amber.jpg" alt="Carpet 2">
-            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/amber.usdz" rel="ar" class="ar-button">View Carpet 2 in AR</a>
+            <p class="carpet-name">Amber</p>
+            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/amber.usdz" rel="ar" class="ar-button">View Amber in AR</a>
         </div>
         <div class="carpet-option">
             <img src="https://neon-trifle-2db3a4.netlify.app/Assets/alegria.jpg" alt="Carpet 3">
-            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alegria.usdz" rel="ar" class="ar-button">View Carpet 3 in AR</a>
+            <p class="carpet-name">Alegria</p>
+            <a href="https://neon-trifle-2db3a4.netlify.app/Assets/alegria.usdz" rel="ar" class="ar-button">View Alegria in AR</a>
         </div>
     </div>
 
