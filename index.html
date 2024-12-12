@@ -134,13 +134,16 @@
 
                     if (pose && pose.transform) {
                         const transform = pose.transform;
-                        if (transform.orientation) {
-                             carpet.rotation.setFromRotationMatrix(transform.orientation);
-                        } else if (transform.rotation) {
-                                carpet.rotation.set(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
-                        } else {
-                            console.error("No valid rotation or orientation data found:", transform);
-                        }
+                        carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
+
+                        // if (transform.orientation) {
+                        //     console.log(transform.orientation)
+                        //      carpet.rotation.setFromRotationMatrix(transform.orientation);
+                        // } else if (transform.rotation) {
+                        //         carpet.rotation.set(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+                        // } else {
+                        //     console.error("No valid rotation or orientation data found:", transform);
+                        // }
                     } else {
                          console.error("Pose or pose transform is null or invalid:", pose);
                         }
