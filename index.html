@@ -136,8 +136,8 @@
                         const transform = pose.transform;
                         console.log(transform.orientation)
                         console.log(transform.rotation)
-                        carpet.position.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
-                        carpet.rotation.set(pose.transform.rotation.x, pose.transform.rotation.y, pose.transform.rotation.z);
+                        carpet.position.set(transform.position.x, transform.position.y, transform.position.z);
+                        carpet.rotation.set(transform.orientation.x, transform.orientation.y, transform.orientation.z, transform.orientation.w);;
 
                         // if (transform.orientation) {
                         //     console.log(transform.orientation)
