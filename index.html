@@ -23,17 +23,21 @@
 
         .carpet-selection {
             display: flex;
-            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
+            margin-top: 20px;
         }
 
         .carpet-option {
             text-align: center;
+            width: 100%;
+            max-width: 200px;
         }
 
         .carpet-option img {
-            width: 150px;
-            height: 150px;
+            width: 100%;
+            height: auto;
             object-fit: cover;
             border-radius: 10px;
         }
@@ -48,10 +52,50 @@
             margin-top: 10px;
             text-decoration: none;
             transition: background-color 0.3s;
+            width: 100%;
+            text-align: center;
         }
 
         .ar-button:hover {
             background-color: #005fcc;
+        }
+
+        /* Media Query for small screens (phones) */
+        @media screen and (max-width: 768px) {
+            .carpet-selection {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .carpet-option {
+                width: 80%;
+                max-width: 350px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .ar-button {
+                padding: 12px 20px;
+            }
+        }
+
+        /* Media Query for very small screens (extra-small phones) */
+        @media screen and (max-width: 480px) {
+            .carpet-option img {
+                width: 80%;
+                max-width: 180px;
+            }
+
+            .ar-button {
+                font-size: 0.9rem;
+                padding: 10px 15px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -60,16 +104,16 @@
     
     <div class="carpet-selection">
         <div class="carpet-option">
-            <img src="carpet1-preview.jpg" alt="Carpet 1">
-            <a href="https://your-site-name.netlify.app/carpet1.usdz" rel="ar" class="ar-button">Carpet 1</a>
+            <img src="https://your-site-name.netlify.app/Assets/alba.jpg" alt="Carpet 1">
+            <a href="https://your-site-name.netlify.app/Assets/alba.usdz" rel="ar" class="ar-button">Carpet 1</a>
         </div>
         <div class="carpet-option">
-            <img src="carpet2-preview.jpg" alt="Carpet 2">
-            <a href="https://your-site-name.netlify.app/carpet2.usdz" rel="ar" class="ar-button">Carpet 2</a>
+            <img src="https://your-site-name.netlify.app/Assets/amber.jpg" alt="Carpet 2">
+            <a href="https://your-site-name.netlify.app/Assets/amber.usdz" rel="ar" class="ar-button">Carpet 2</a>
         </div>
         <div class="carpet-option">
-            <img src="carpet3-preview.jpg" alt="Carpet 3">
-            <a href="https://your-site-name.netlify.app/carpet3.usdz" rel="ar" class="ar-button">Carpet 3</a>
+            <img src="https://your-site-name.netlify.app/Assets/alegria.jpg" alt="Carpet 3">
+            <a href="https://your-site-name.netlify.app/Assets/alegria.usdz" rel="ar" class="ar-button">Carpet 3</a>
         </div>
     </div>
 </body>
