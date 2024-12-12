@@ -27,14 +27,11 @@
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
-            // Ensure WebGL context is XR-compatible
-            const gl = renderer.getContext();
-            if (gl && gl.makeXRCompatible) {
-                await gl.makeXRCompatible();
-            }
-
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
+            renderer.xr.enabled = true;
+            container.appendChild(renderer.domElement);
+
 
             // Set up a basic light
             const light = new THREE.AmbientLight(0x404040, 5); // Ambient light
@@ -48,6 +45,7 @@
                     carpet = gltf.scene;
                     carpet.scale.set(1, 1, 1); // Adjust the scale if necessary
                     carpet.rotation.x = -Math.PI / 2; // Lay the carpet flat on the ground
+                    carpet.visible = false; // we start with the reticle not visible
                     scene.add(carpet);
                     console.log('Carpet loaded');
                 },
