@@ -86,7 +86,7 @@
                     xrSession.updateRenderState({ baseLayer: glLayer });
 
                     // Create and request a reference space
-                    referenceSpace = await xrSession.requestReferenceSpace('local');
+                    referenceSpace = await xrSession.requestReferenceSpace('viewer');
                     hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
                     console.log("Hit Test Source: ", hitTestSource);
 
@@ -114,13 +114,14 @@
                 if (cameraPose) {
                     camera.position.set(cameraPose.position.x, cameraPose.position.y, cameraPose.position.z);
                     camera.rotation.set(cameraPose.orientation.x, cameraPose.orientation.y, cameraPose.orientation.z, cameraPose.orientation.w);
-                }
+                    }
             } else {
                 console.log("No viewer pose available for this frame.");
             }
 
             // Continue with hit testing and carpet placement
             if (hitTestSource) {
+                console.log(viewerPose)
                 const hitTestResults = frame.getHitTestResults(hitTestSource);
                 console.log("Hit Test Results Length:", hitTestResults.length); // Debug log for hit test results length
 
