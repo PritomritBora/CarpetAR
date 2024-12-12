@@ -134,10 +134,10 @@
 
                     if (pose && pose.transform) {
                         const transform = pose.transform;
-                        console.log(transform.orientation)
+                        console.log("orientation", transform.orientation)
                         console.log(transform.rotation)
                         carpet.position.set(transform.position.x, transform.position.y, transform.position.z);
-                        carpet.rotation.set(transform.orientation.x, transform.orientation.y, transform.orientation.z, transform.orientation.w);
+                        carpet.rotation.set(transform.orientation.x, transform.orientation.y, transform.orientation.z, transform.orientation.w);;
 
                         // if (transform.orientation) {
                         //     console.log(transform.orientation)
