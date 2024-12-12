@@ -3,76 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Place the Carpet in AR</title>
+    <title>Choose Your Carpet in AR</title>
     <style>
-        /* General Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
         body {
-            background: linear-gradient(to bottom right, #f5f5f5, #e0e0e0);
+            font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 100%;
+            margin: 0;
+            background: #f5f5f5;
         }
 
         h1 {
-            font-size: 1.8rem;
+            margin-bottom: 20px;
             color: #333;
-            margin-bottom: 15px;
         }
 
-        p {
-            color: #666;
-            margin-bottom: 20px;
+        .carpet-selection {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
         }
 
-        .preview-image {
-            width: 100%;
-            height: auto;
+        .carpet-option {
+            text-align: center;
+        }
+
+        .carpet-option img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
             border-radius: 10px;
-            margin-bottom: 20px;
         }
 
         .ar-button {
-            display: inline-block;
-            background: #0078ff;
+            display: block;
+            background-color: #0078ff;
             color: white;
-            padding: 15px 20px;
-            text-decoration: none;
-            border-radius: 50px;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-size: 1rem;
-            font-weight: bold;
-            transition: background 0.3s ease;
+            margin-top: 10px;
+            text-decoration: none;
+            transition: background-color 0.3s;
         }
 
         .ar-button:hover {
-            background: #005fcc;
+            background-color: #005fcc;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Visualize Your Carpet</h1>
-        <p>Click the button below to see how the carpet looks in your space.</p>
-        <img src="https://neon-trifle-2db3a4.netlify.app/Assets/amber-80x120-alfombra-lavable.jpg" alt="Carpet Preview" class="preview-image">
-        <a href="https://neon-trifle-2db3a4.netlify.app/Assets/amber.usdz" rel="ar" class="ar-button">View in AR</a>
+    <h1>Choose Your Carpet</h1>
+    
+    <div class="carpet-selection">
+        <div class="carpet-option">
+            <img src="carpet1-preview.jpg" alt="Carpet 1">
+            <a href="https://your-site-name.netlify.app/carpet1.usdz" rel="ar" class="ar-button">Carpet 1</a>
+        </div>
+        <div class="carpet-option">
+            <img src="carpet2-preview.jpg" alt="Carpet 2">
+            <a href="https://your-site-name.netlify.app/carpet2.usdz" rel="ar" class="ar-button">Carpet 2</a>
+        </div>
+        <div class="carpet-option">
+            <img src="carpet3-preview.jpg" alt="Carpet 3">
+            <a href="https://your-site-name.netlify.app/carpet3.usdz" rel="ar" class="ar-button">Carpet 3</a>
+        </div>
     </div>
 </body>
 </html>
