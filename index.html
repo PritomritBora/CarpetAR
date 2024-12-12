@@ -137,7 +137,9 @@
                         console.log("orientation", transform.orientation)
                         console.log(transform.rotation)
                         carpet.position.set(transform.position.x, transform.position.y, transform.position.z);
-                        carpet.rotation.set(transform.orientation.x, transform.orientation.y, transform.orientation.z, transform.orientation.w);;
+                        carpet.rotation.set(transform.orientation.x, transform.orientation.y, transform.orientation.z, transform.orientation.w);
+                        carpet.visible = true;
+                        // carpet.matrix.fromArray(pose.transfomr.matrix);
 
                         // if (transform.orientation) {
                         //     console.log(transform.orientation)
@@ -152,7 +154,9 @@
                         }
 
                 }
+                else { carper.visible = false;}
             } else {
+               
                 console.log("No hit test results found.");
             }
 
