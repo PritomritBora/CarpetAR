@@ -30,8 +30,7 @@
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.xr.enabled = true;
-            container.appendChild(renderer.domElement);
-
+            document.body.appendChild(renderer.domElement);
 
             // Set up a basic light
             const light = new THREE.AmbientLight(0x404040, 5); // Ambient light
