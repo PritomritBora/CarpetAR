@@ -1,185 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebXR AR Carpet Placement</title>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
-    </style>
-</head>
-<body>
-    <!-- Button to start AR session -->
-    <button id="startAR">Start AR</button>
-
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <head>
+    <title>Hit Testing - Only Reticle</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-    <script>
-        let scene, camera, renderer, carpet;
-        let xrSession, hitTestSource = null;
-        let referenceSpace;
+  </head>
 
-        // Initialize Three.js scene
-        async function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  <body>
+    <script type="module">
+      // This example renders a "reticle" or round circle to indicate where surfaces are
+      // On your phone just point it towards a surface (like a table or the floor) and you should see a round circle appear 
+      // where the hit test intersects the floor
+      
+      import { ARButton } from "https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js";
 
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.xr.enabled = true;
-            document.body.appendChild(renderer.domElement);
+      let container;
+      let camera, scene, renderer;
+      let reticle;
 
-            // Set up a basic light
-            const light = new THREE.AmbientLight(0x404040, 5); // Ambient light
-            scene.add(light);
+      init();
+      animate();
 
-            // Load the carpet model using GLTFLoader
-            const loader = new THREE.GLTFLoader();
-            loader.load(
+      function init() {
+        container = document.createElement("div");
+        document.body.appendChild(container);
+
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(
+          70,
+          window.innerWidth / window.innerHeight,
+          0.01,
+          20
+        );
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.xr.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+        light.position.set(0.5, 1, 0.25);
+        scene.add(light);
+
+        addReticleToScene(); // circle visual aid
+
+        const button = ARButton.createButton(renderer, {
+          requiredFeatures: ["hit-test"] // notice a new required feature
+        });
+        document.body.appendChild(button);
+        renderer.domElement.style.display = "none";
+
+        window.addEventListener("resize", onWindowResize, false);
+      }
+
+      function addReticleToScene() {
+
+        const loader = new THREE.GLTFLoader();
+        loader.load(
                 './Assets/carpet.glb',  // Path to your GLB model
                 function(gltf) {
-                    carpet = gltf.scene;
-                    carpet.scale.set(1, 1, 1); // Adjust the scale if necessary
-                    carpet.rotation.x = -Math.PI / 2; // Lay the carpet flat on the ground
-                    carpet.visible = false; // we start with the reticle not visible
-                    scene.add(carpet);
-                    console.log('Carpet loaded');
+                    reticle = gltf.scene;
+                    reticle.scale.set(1, 1, 1); // Adjust the scale if necessary
+                    reticle.rotation.x = -Math.PI / 2; // Lay the carpet flat on the ground
+                    reticle.visible = false; // we start with the reticle not visible
+                    scene.add(reticle);
+                    console.log('reticle loaded');
                 },
                 undefined,
                 function(error) {
-                    console.error('Error loading carpet model:', error);
+                    console.error('Error loading reticle model:', error);
                 }
             );
 
-            // Set the camera's aspect ratio and update the projection matrix
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-        }
 
-        // Start the XR session
-        async function startXR() {
-            if (navigator.xr) {
-                try {
-                    // Request an immersive AR session
-                    const session = await navigator.xr.requestSession('immersive-ar', {
-                        requiredFeatures: ['hit-test', 'viewer']
-                    });
-                    console.log("XR session started");
-                    xrSession = session;
-                    xrSession.addEventListener('end', onSessionEnded);
+        // optional axis helper you can add to an object
+        // reticle.add(new THREE.AxesHelper(1));
+      }
 
-                    // Create a WebGL layer that is XR compatible
-                    const glLayer = new XRWebGLLayer(xrSession, renderer.getContext(), {
-                        antialias: true,
-                        alpha: true,
-                        depth: true,
-                        stencil: true
-                    });
 
-                    // Update session state with the XR-compatible WebGL context
-                    xrSession.updateRenderState({ baseLayer: glLayer });
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
 
-                    // Create and request a reference space
-                    referenceSpace = await xrSession.requestReferenceSpace('viewer');
-                    hitTestSource = await xrSession.requestHitTestSource({ space: referenceSpace });
-                    console.log("Hit Test Source: ", hitTestSource);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
 
-                    xrSession.requestAnimationFrame(onXRFrame);
-                } catch (err) {
-                    console.error("WebXR session failed:", err);
-                }
-            }
-        }
+      function animate() {
+        renderer.setAnimationLoop(render);
+      }
 
-        // Handle the XR frame rendering
-        function onXRFrame(t, frame) {
-            const session = frame.session;
+      // read more about hit testing here:
+      // https://github.com/immersive-web/hit-test/blob/master/hit-testing-explainer.md
+      // https://web.dev/ar-hit-test/
 
-            if (!referenceSpace) {
-                console.error("Reference space is not available");
-                return;
-            }
+      // hit testing provides the position and orientation of the intersection point, but nothing about the surfaces themselves.
 
-            const viewerPose = frame.getViewerPose(referenceSpace);
-            console.log("getting viewer pose");
+      let hitTestSource = null;
+      let localSpace = null;
+      let hitTestSourceInitialized = false;
 
-            if (viewerPose) {
-                const cameraPose = viewerPose.pose;
-                if (cameraPose) {
-                    camera.position.set(cameraPose.position.x, cameraPose.position.y, cameraPose.position.z);
-                    camera.rotation.set(cameraPose.orientation.x, cameraPose.orientation.y, cameraPose.orientation.z, cameraPose.orientation.w);
-                    }
-            } else {
-                console.log("No viewer pose available for this frame.");
-            }
+      // This function gets called just once to initialize a hitTestSource
+      // The purpose of this function is to get a) a hit test source and b) a reference space
+      async function initializeHitTestSource() {
+        const session = renderer.xr.getSession();
+        
+        // Reference spaces express relationships between an origin and the world.
 
-            // Continue with hit testing and carpet placement
-            if (hitTestSource) {
-                console.log(viewerPose)
-                const hitTestResults = frame.getHitTestResults(hitTestSource);
-                console.log("Hit Test Results Length:", hitTestResults.length); // Debug log for hit test results length
+        // For hit testing, we use the "viewer" reference space,
+        // which is based on the device's pose at the time of the hit test.
+        const viewerSpace = await session.requestReferenceSpace("viewer");
+        hitTestSource = await session.requestHitTestSource({ space: viewerSpace });
 
-                if (hitTestResults.length > 0) {
-                    console.log("hitTestResults available");
+        // We're going to use the reference space of "local" for drawing things.
+        // which gives us stability in terms of the environment.
+        // read more here: https://developer.mozilla.org/en-US/docs/Web/API/XRReferenceSpace
+        localSpace = await session.requestReferenceSpace("local");
 
-                    const hit = hitTestResults[0];
-                    const pose = hit.getPose(referenceSpace);
-                    console.log(pose);
-
-                    if (pose && pose.transform) {
-                        const transform = pose.transform;
-                        console.log("orientation", transform.orientation)
-                        console.log(transform.rotation)
-                        carpet.position.set(transform.position.x, transform.position.y, transform.position.z);
-                        carpet.rotation.set(transform.orientation.x, transform.orientation.y, transform.orientation.z, transform.orientation.w);
-                        carpet.visible = true;
-                        // carpet.matrix.fromArray(pose.transfomr.matrix);
-
-                        // if (transform.orientation) {
-                        //     console.log(transform.orientation)
-                        //      carpet.rotation.setFromRotationMatrix(transform.orientation);
-                        // } else if (transform.rotation) {
-                        //         carpet.rotation.set(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
-                        // } else {
-                        //     console.error("No valid rotation or orientation data found:", transform);
-                        // }
-                    } else {
-                         console.error("Pose or pose transform is null or invalid:", pose);
-                        }
-
-                }
-                else { carpet.visible = false;}
-            } else {
-               
-                console.log("No hit test results found.");
-            }
-
-            renderer.render(scene, camera);
-            xrSession.requestAnimationFrame(onXRFrame);
-        }
-
-        // On XR session end
-        function onSessionEnded() {
-            console.log('XR session ended');
-        }
-
-        // Resize listener
-        window.addEventListener('resize', () => {
-            if (camera && renderer) {
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-            }
+        // set this to true so we don't request another hit source for the rest of the session
+        hitTestSourceInitialized = true;
+        
+        // In case we close the AR session by hitting the button "End AR"
+        session.addEventListener("end", () => {
+          hitTestSourceInitialized = false;
+          hitTestSource = null;
         });
+      }
 
-        // Event listener to start AR session when button is clicked
-        document.getElementById('startAR').addEventListener('click', () => {
-            init();  // Initialize the scene
-            startXR();  // Start the AR session
-        });
+      // the callback from 'setAnimationLoop' can also return a timestamp
+      // and an XRFrame, which provides access to the information needed in
+      // order to render a single frame of animation for an XRSession describing
+      // a VR or AR sccene.
+      function render(timestamp, frame) {
+        if (frame) {
+          // 1. create a hit test source once and keep it for all the frames
+          // this gets called only once
+          if (!hitTestSourceInitialized) {
+            initializeHitTestSource();
+          }
+
+          // 2. get hit test results
+          if (hitTestSourceInitialized) {
+            // we get the hit test results for a particular frame
+            const hitTestResults = frame.getHitTestResults(hitTestSource);
+
+            // XRHitTestResults The hit test may find multiple surfaces. The first one in the array is the one closest to the camera.
+            if (hitTestResults.length > 0) {
+              const hit = hitTestResults[0];
+              // Get a pose from the hit test result. The pose represents the pose of a point on a surface.
+              const pose = hit.getPose(localSpace);
+
+              reticle.visible = true;
+              // Transform/move the reticle image to the hit test position
+              reticle.matrix.fromArray(pose.transform.matrix);
+            } else {
+              reticle.visible = false;
+            }
+          }
+
+          renderer.render(scene, camera);
+        }
+      }
     </script>
-</body>
+  </body>
 </html>
